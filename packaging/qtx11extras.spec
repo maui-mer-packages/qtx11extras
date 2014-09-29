@@ -1,10 +1,13 @@
-Name:       qt5-qtx11extras
+# Package prefix
+%define pkgname qt5-qtx11extras
+
+Name:       qtx11extras
 Summary:    Cross-platform application and UI framework
-Version:    5.2.1
-Release:    1%{?dist}
+Version:    5.3.2
+Release:    1
 Group:      Qt/Qt
 License:    LGPLv2.1 with exception or GPLv3
-URL:        http://qt-project.org/
+URL:        http://qt.io
 Source0:    %{name}-%{version}.tar.xz
 BuildRequires:  qt5-qtcore
 BuildRequires:  qt5-qtcore-devel
@@ -31,18 +34,32 @@ Linux and UNIX-like systems including embedded Linux systems that use the X
 Window System.
 
 
-%package devel
+%package -n %{pkgname}
+Summary:    Cross-platform application and UI framework
+Group:      Qt/Qt
+
+%description -n %{pkgname}
+Qt is a cross-platform application and UI framework. Using Qt, you can
+write web-enabled applications once and deploy them across desktop,
+mobile and embedded systems without rewriting the source code.
+
+The X11 Extras module provides features specific to platforms using X11, e.g.
+Linux and UNIX-like systems including embedded Linux systems that use the X
+Window System.
+
+
+%package -n %{pkgname}-devel
 Summary:    Development files for QtX11Extras
 Group:      Qt/Qt
-Requires:   %{name} = %{version}-%{release}
+Requires:   %{pkgname} = %{version}-%{release}
 
-%description devel
+%description -n %{pkgname}-devel
 This package contains the files necessary to develop
 applications that use QtX11Extras,
 
 
 %prep
-%setup -q -n %{name}-%{version}/upstream
+%setup -q -n %{name}-%{version}
 
 
 %build
@@ -67,23 +84,23 @@ rm -rf %{buildroot}/%{_includedir}/qt5/Qt
 
 # Fix wrong path in pkgconfig files
 find %{buildroot}%{_libdir}/pkgconfig -type f -name '*.pc' \
--exec perl -pi -e "s, -L%{_builddir}/?\S+,,g" {} \;
+    -exec perl -pi -e "s, -L%{_builddir}/?\S+,,g" {} \;
 # Fix wrong path in prl files
 find %{buildroot}%{_libdir} -type f -name '*.prl' \
--exec sed -i -e "/^QMAKE_PRL_BUILD_DIR/d;s/\(QMAKE_PRL_LIBS =\).*/\1/" {} \;
+    -exec sed -i -e "/^QMAKE_PRL_BUILD_DIR/d;s/\(QMAKE_PRL_LIBS =\).*/\1/" {} \;
 
 %fdupes %{buildroot}/%{_includedir}
 
 
-%post -p /sbin/ldconfig
-%postun -p /sbin/ldconfig
+%post -n %{pkgname} -p /sbin/ldconfig
+%postun -n %{pkgname} -p /sbin/ldconfig
 
 
-%files
+%files -n %{pkgname}
 %defattr(-,root,root,-)
 %{_libdir}/libQt5X11Extras.so.5*
 
-%files devel
+%files -n %{pkgname}-devel
 %defattr(-,root,root,-)
 %{_includedir}/qt5/QtX11Extras/
 %{_libdir}/libQt5X11Extras.so
